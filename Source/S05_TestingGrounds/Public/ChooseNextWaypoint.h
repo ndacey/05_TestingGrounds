@@ -8,6 +8,8 @@
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AIController.h"
+#include "Public/PatrolRoute.h"
 #include "ChooseNextWaypoint.generated.h"
 
 /**
@@ -23,4 +25,7 @@ class S05_TESTINGGROUNDS_API UChooseNextWaypoint : public UBTTaskNode
 protected:
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	struct FBlackboardKeySelector IndexKey;
+
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+	struct FBlackboardKeySelector WaypointKey;
 };
