@@ -80,14 +80,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	uint32 bUsingMotionControllers : 1;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	TSubclassOf<class AGun> GunBlueprint;
+
 protected:
-	
-	/** Fires a projectile. */
-	void OnFire();
-
-	/** Resets HMD orientation and position in VR. */
-	void OnResetVR();
-
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
 
@@ -137,6 +133,9 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+private:
+	AGun* Gun;
 
 };
 

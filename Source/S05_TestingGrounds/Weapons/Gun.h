@@ -31,7 +31,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void OnFire();
+	
 
 public:	
 	// Called every frame
@@ -49,14 +49,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	class UAnimMontage* FireAnimation;
 
-	/** Whether to use motion controller location for aiming. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-	uint32 bUsingMotionControllers : 1;
+	class UAnimInstance* AnimInstance;
 
-	/** Location on VR gun mesh where projectiles should spawn. */
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USceneComponent* VR_MuzzleLocation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
-		class UAnimInstance* AnimInstance;
+	/** Fires a projectile. */
+	void OnFire();
 };
