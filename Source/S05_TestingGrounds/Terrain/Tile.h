@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Engine/World.h"
+#include "DrawDebugHelpers.h"
 #include "Tile.generated.h"
 
 UCLASS()
@@ -17,7 +18,7 @@ public:
 	ATile();
 
 	UFUNCTION(BlueprintCallable, Category = "")
-	void PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn);
+	void PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn = 0, int MaxSpawn = 1, float Radius = 500);
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,6 +28,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
+private:
+	bool FindEmptyLocation(FVector& OutLocation , float Radius);
+
+	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint);
+
+	bool CanSpawnAtLocation(FVector Location, float Radius);
 	
 };
