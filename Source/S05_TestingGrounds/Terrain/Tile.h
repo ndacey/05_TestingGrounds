@@ -9,6 +9,8 @@
 #include "EngineUtils.h"
 #include "Tile.generated.h"
 
+class UActorPool;
+
 UCLASS()
 class S05_TESTINGGROUNDS_API ATile : public AActor
 {
@@ -29,11 +31,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "pool")
+	void SetPool(UActorPool* Pool);
+
 private:
 	bool FindEmptyLocation(FVector& OutLocation , float Radius);
 
 	void PlaceActor(TSubclassOf<AActor> ToSpawn, FVector SpawnPoint, float Rotation, float Scale);
 
 	bool CanSpawnAtLocation(FVector Location, float Radius);
+
+	UActorPool* Pool;
 	
 };
