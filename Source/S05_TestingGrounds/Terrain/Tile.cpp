@@ -36,32 +36,54 @@ void ATile::PositionNavMeshBounds()
 	GetWorld()->GetNavigationSystem()->Build();
 }
 
-void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn, int MaxSpawn, float Radius, float MinScale, float MaxScale)
+template<class T>
+void ATile::RandomlyPlaceActors(TSubclassOf<T> ToSpawn, FSpawnGeneration SpawnGeneration)
 {
-	TArray<FSpawnPosition> SpawnPositions = RandomSpawnPositions(MinSpawn, MaxSpawn, Radius, MinScale, MaxScale);
-	for (FSpawnPosition SpawnPosition : SpawnPositions)
+	int32 NumberToSpawn = FMath::RandRange(SpawnGeneration.MinSpawn, SpawnGeneration.MaxSpawn);
+	for (size_t i = 0; i < NumberToSpawn; i++)
 	{
-		PlaceActor(ToSpawn, SpawnPosition);
+		FSpawnPosition SpawnPosition;
+		SpawnPosition.Scale = FMath::RandRange(SpawnGeneration.MinScale, SpawnGeneration.MaxScale);
+		bool CanSpawn = FindEmptyLocation(SpawnPosition.Location, SpawnGeneration.Radius * SpawnPosition.Scale);
+		if (CanSpawn)
+		{
+			SpawnPosition.Rotation = FMath::RandRange(-180.f, 180.f);
+			PlaceActor(ToSpawn, SpawnPosition);
+		}
 	}
 }
 
-TArray<FSpawnPosition> ATile::RandomSpawnPositions(int MinSpawn, int MaxSpawn, float Radius, float MinScale, float MaxScale)
+void ATile::PlaceActors(TSubclassOf<AActor> ToSpawn, FSpawnGeneration SpawnGeneration)
 {
-	TArray<FSpawnPosition> SpawnPositions;
-	int NumberToSpawn = FMath::RandRange(MinSpawn, MaxSpawn);
-	for (int i = 0; i < NumberToSpawn; i++)
-	{
-		FSpawnPosition SpawnPosition;
-		SpawnPosition.Scale = FMath::RandRange(MinScale, MaxScale);
-		bool found = FindEmptyLocation(SpawnPosition.Location, Radius * SpawnPosition.Scale);
-		if (found)
-		{
-			SpawnPosition.Rotation = FMath::RandRange(-180.f, 180.f);
-			SpawnPositions.Add(SpawnPosition);
-		}
-	}
-	return SpawnPositions;
+	RandomlyPlaceActors(ToSpawn, SpawnGeneration);
 }
+
+void ATile::PlaceAIPawns(TSubclassOf<APawn> ToSpawn, FSpawnGeneration SpawnGeneration)
+{
+	RandomlyPlaceActors(ToSpawn, SpawnGeneration);
+}
+
+//TArray<FSpawnPosition> ATile::RandomSpawnPositions(FSpawnGeneration SpawnGeneration)
+//{
+//	TArray<FSpawnPosition> SpawnPositions;
+//	int NumberToSpawn = FMath::RandRange(SpawnGeneration.MinSpawn, SpawnGeneration.MaxSpawn);
+//	for (int i = 0; i < NumberToSpawn; i++)
+//	{
+//		FSpawnPosition SpawnPosition;
+//		SpawnPosition.Scale = FMath::RandRange(SpawnGeneration.MinScale, SpawnGeneration.MaxScale);
+//		bool found = FindEmptyLocation(SpawnPosition.Location, SpawnGeneration.Radius * SpawnPosition.Scale);
+//		if (found)
+//		{
+//			SpawnPosition.Rotation = FMath::RandRange(-180.f, 180.f);
+//			SpawnPositions.Add(SpawnPosition);
+//		}
+//	}
+//	return SpawnPositions;
+//}
+
+
+
+
 
 bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 {
@@ -82,10 +104,26 @@ bool ATile::FindEmptyLocation(FVector& OutLocation, float Radius)
 void ATile::PlaceActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition& SpawnPosition)
 {
 	AActor* Spawned = GetWorld()->SpawnActor<AActor>(ToSpawn);
-	Spawned->SetActorRelativeLocation(SpawnPosition.Location);
-	Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
-	Spawned->SetActorRotation(FRotator(0, SpawnPosition.Rotation, 0));
-	Spawned->SetActorScale3D(FVector(SpawnPosition.Scale));
+	if (Spawned)
+	{
+		Spawned->SetActorRelativeLocation(SpawnPosition.Location);
+		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		Spawned->SetActorRotation(FRotator(0, SpawnPosition.Rotation, 0));
+		Spawned->SetActorScale3D(FVector(SpawnPosition.Scale));
+	}	
+}
+
+void ATile::PlaceActor(TSubclassOf<APawn> ToSpawn, const FSpawnPosition& SpawnPosition)
+{
+	APawn* Spawned = GetWorld()->SpawnActor<APawn>(ToSpawn);
+	if (Spawned)
+	{
+		Spawned->SetActorRelativeLocation(SpawnPosition.Location);
+		Spawned->AttachToActor(this, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
+		Spawned->SetActorRotation(FRotator(0, SpawnPosition.Rotation, 0));
+		Spawned->SpawnDefaultController();
+		Spawned->Tags.Add(FName("Enemy"));
+	}	
 }
 
 // Called when the game starts or when spawned

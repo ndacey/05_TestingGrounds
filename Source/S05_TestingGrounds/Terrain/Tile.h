@@ -20,15 +20,20 @@ struct FSpawnPosition
 	float Scale;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FSpawnGeneration
 {
 	GENERATED_USTRUCT_BODY()
-
-	int MinSpawn = 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	int MinSpawn = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	int MaxSpawn = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	float Radius = 500.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	float MinScale = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
 	float MaxScale = 1.f;
 };
 
@@ -43,8 +48,12 @@ public:
 	// Sets default values for this actor's properties
 	ATile();
 
-	UFUNCTION(BlueprintCallable, Category = "")
-	void PlaceActors(TSubclassOf<AActor> ToSpawn, int MinSpawn = 0, int MaxSpawn = 1, float Radius = 500, float MinScale = 1, float MaxScale = 1);
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
+	void PlaceActors(TSubclassOf<AActor> ToSpawn, FSpawnGeneration SpawnGeneration);
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
+	void PlaceAIPawns(TSubclassOf<APawn> ToSpawn, FSpawnGeneration SpawnGeneration);
+
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,11 +79,16 @@ public:
 private:
 	void PositionNavMeshBounds();
 
-	TArray<FSpawnPosition> RandomSpawnPositions(int MinSpawn, int MaxSpawn, float Radius, float MinScale, float MaxScale);
+	//TArray<FSpawnPosition> RandomSpawnPositions(FSpawnGeneration SpawnGeneration);
 
-	bool FindEmptyLocation(FVector& OutLocation , float Radius);
+	template<class T>
+	void RandomlyPlaceActors(TSubclassOf<T> ToSpawn, FSpawnGeneration SpawnGeneration);
+
+	bool FindEmptyLocation(FVector& OutLocation, float Radius);
 
 	void PlaceActor(TSubclassOf<AActor> ToSpawn, const FSpawnPosition& SpawnPosition);
+
+	void PlaceActor(TSubclassOf<APawn> ToSpawn, const FSpawnPosition& SpawnPosition);
 
 	bool CanSpawnAtLocation(FVector Location, float Radius);
 
