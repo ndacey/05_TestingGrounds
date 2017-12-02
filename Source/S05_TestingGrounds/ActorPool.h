@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/Actor.h"
 #include "ActorPool.generated.h"
 
 
@@ -21,5 +22,6 @@ public:
 
 	void Add(AActor* ActorToAdd);
 		
-	
+private:
+	TArray<AActor*> Pool;
 };
